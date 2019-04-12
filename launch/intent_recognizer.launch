@@ -1,0 +1,7 @@
+<!-- Main launch file for intent recognizer module -->
+
+<launch>
+
+    <node name="intent_node" pkg="intent_recognizer" type="intent_wrapper.py" output="screen" />
+
+</launch>
