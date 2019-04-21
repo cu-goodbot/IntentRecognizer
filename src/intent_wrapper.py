@@ -12,6 +12,9 @@ from scene_understanding.msg import Scene
 
 from speech_to_text import speech_to_text, identify_command
 
+POI_ANGLE_THRESHOLD = 3
+OBSTACLE_ANGLE_THRESHOLD = 30
+
 class IntentWrapper(object):
 
     def __init__(self):
@@ -63,7 +66,9 @@ class IntentWrapper(object):
         intent["poi_present"] = False
         intent["poi_depth"] = None
         intent["poi_angle"] = None
-        # intent = {'turn_distance': 1.5708}
+        intent["poi_deviation"] = False
+        intent["obstacle_present"] = False
+        intent["obstacle_label"] = None
 
         # Add POI info to generate the true intent
         for obstacle in self.POI_info.objects:
@@ -71,6 +76,11 @@ class IntentWrapper(object):
                 intent["poi_present"] = True
                 intent["poi_depth"] = obstacle.depth
                 intent["poi_angle"] = obstacle.angle
+                if abs(obstacle.angle) > POI_ANGLE_THRESHOLD:
+                    intent["poi_deviation"] = True
+            elif abs(obstacle.angle) < OBSTACLE_ANGLE_THRESHOLD and not intent["obstacle_present"]:
+                intent["obstacle_present"] = True
+                intent["obstacle_label"] = obstacle.label
 
         return intent
 
