@@ -7,8 +7,7 @@ ROS wrapper for Intent Recognition module.
 import rospy
 import json
 from std_msgs.msg import String
-# from rospy_message_converter import message_converter
-from scene_understanding.msg import Scene
+from intent_recognizer.msg import Scene, Intent
 
 from speech_to_text import speech_to_text, identify_command
 
@@ -27,7 +26,7 @@ class IntentWrapper(object):
         self.POI_info = None
 
         # create publishers and subscribers
-        intent_pub = rospy.Publisher('intent',String,queue_size=10)
+        intent_pub = rospy.Publisher('/intent',Intent,queue_size=10)
         rospy.Subscriber('/scene_info', Scene, self.get_POI_info)
 
         rospy.init_node('intent_recognizer')
@@ -40,12 +39,15 @@ class IntentWrapper(object):
             data = self.get_input()
             
             # create intent message
-            flat_data = json.dumps(data)
+            # flat_data = json.dumps(data)
 
             # publish message
-            msg = String()
-            msg.data = flat_data
+            msg = Intent(**data)
+            # msg = String()
+            # msg.data = flat_data
             intent_pub.publish(msg)
+
+            rate.sleep()
 
 
     def get_POI_info(self, msg):
