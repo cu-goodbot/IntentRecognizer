@@ -10,6 +10,7 @@ from std_msgs.msg import String
 from intent_recognizer.msg import Scene, Intent
 
 from speech_to_text import speech_to_text, identify_command
+from generate_explanation import generate_sentence, speaker
 
 POI_ANGLE_THRESHOLD = 3
 OBSTACLE_ANGLE_THRESHOLD = 30
@@ -36,13 +37,19 @@ class IntentWrapper(object):
         while not rospy.is_shutdown():
 
             # wait for user to hit button and begin speaking
-            data = self.get_input()
+            intent = self.get_input()
+
+            # Check if the user asks for an explanation
+            if intent.explain:
+                # TODO pause Movo mometarily
+                sentence = generate_sentence(intent)
+                speaker(sentence)
             
             # create intent message
             # flat_data = json.dumps(data)
 
             # publish message
-            msg = Intent(**data)
+            msg = Intent(**intent)
             # msg = String()
             # msg.data = flat_data
             intent_pub.publish(msg)
@@ -65,21 +72,20 @@ class IntentWrapper(object):
         # wait for button press
         raw_input('Press r and then enter and then speak input\n')
         intent = identify_command()
+        intent["poi_objects"] = []
         intent["poi_present"] = False
-        intent["poi_depth"] = None
-        intent["poi_angle"] = None
-        intent["poi_deviation"] = False
         intent["obstacle_present"] = False
         intent["obstacle_label"] = None
 
         # Add POI info to generate the true intent
         for obstacle in self.POI_info.objects:
             if obstacle.label == 'person':
+                base_poi_object = {"poi_depth" : obstacle.depth,
+                                   "poi_angle" : obstacle.angle,
+                                   "poi_deviation" : abs(obstacle.angle) > POI_ANGLE_THRESHOLD,
+                                   "poi_label" : obstacle.label}
                 intent["poi_present"] = True
-                intent["poi_depth"] = obstacle.depth
-                intent["poi_angle"] = obstacle.angle
-                if abs(obstacle.angle) > POI_ANGLE_THRESHOLD:
-                    intent["poi_deviation"] = True
+                intent["poi_objects"].append(base_poi_object.copy())
             elif abs(obstacle.angle) < OBSTACLE_ANGLE_THRESHOLD and not intent["obstacle_present"]:
                 intent["obstacle_present"] = True
                 intent["obstacle_label"] = obstacle.label

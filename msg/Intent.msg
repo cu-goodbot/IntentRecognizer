@@ -1,8 +1,6 @@
 Header Header
+POI_Objects[] poi_objects
 bool poi_present
-float64 poi_depth
-float64 poi_angle
-bool poi_deviation
 bool obstacle_present
 string obstacle_label
 string turn_direction

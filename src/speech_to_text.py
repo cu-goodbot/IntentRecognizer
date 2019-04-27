@@ -14,23 +14,29 @@ def speech_to_text():
         except:
             return "forward"
 
+def form_intent(step_size = STEP_SIZE, direction = None, explain = False):
+    return {
+        'turn_direction': direction,
+        'forward_distance': step_size,
+        'explain': explain
+    }
+
 
 def identify_command():
     utterance = speech_to_text()
 
     print("'" + utterance + "'")
     if 'forward' in utterance:
-        return {'forward_distance' : STEP_SIZE,
-                'turn_direction': None}
+        return form_intent()
+
     elif 'stop' in utterance:
-        return {'forward_distance': 0,
-                'turn_direction': None}
+        return form_intent(step_size=0)
     elif 'left' in utterance:
-        return {'turn_direction': 'left',
-                'forward_distance' : STEP_SIZE}
+        return form_intent(direction='left')
     elif 'right' in utterance:
-        return {'turn_direction': 'right',
-                'forward_distance' : STEP_SIZE,}
+        return form_intent(direction='right')
+    elif len(set(utterance.split()).intersection({'explain', 'what', 'why'})) > 0:
+        return form_intent(explain=True)
     else:
         return {'explain': 'Sorry, can you repeat?'}
 
