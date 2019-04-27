@@ -5,6 +5,12 @@ recognizer = sr.Recognizer()
 STEP_SIZE = 2
 
 def speech_to_text(ask_poi = False):
+
+    # set threshold for input
+    with sr.Microphone() as sound_source:
+        recognizer.adjust_for_ambient_noise(sound_source)
+    print('Set input energy threshold to: {}'.format(recognizer.energy_threshold))
+
     with sr.Microphone() as sound_source:
         print("Say something")
         audio = recognizer.listen(sound_source)
