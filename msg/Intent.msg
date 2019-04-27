@@ -1,5 +1,5 @@
 Header Header
-POI_Objects[] poi_objects
+POI_Object[] poi_objects
 bool poi_present
 bool obstacle_present
 string obstacle_label
