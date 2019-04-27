@@ -3,13 +3,14 @@
 """
 ROS wrapper for Intent Recognition module.
 """
+from pprint import pprint
 
 import rospy
 import json
 from std_msgs.msg import String
-from intent_recognizer.msg import Scene, Intent
+from intent_recognizer.msg import Scene, Intent, POI_Object
 
-from speech_to_text import speech_to_text, identify_command
+from speech_to_text import speech_to_text, identify_command, indentify_poi
 from generate_explanation import generate_sentence, speaker
 
 POI_ANGLE_THRESHOLD = 3
@@ -40,7 +41,7 @@ class IntentWrapper(object):
             intent = self.get_input()
 
             # Check if the user asks for an explanation
-            if intent.explain:
+            if intent["explain"]:
                 # TODO pause Movo mometarily
                 sentence = generate_sentence(intent)
                 speaker(sentence)
@@ -48,10 +49,11 @@ class IntentWrapper(object):
             # create intent message
             # flat_data = json.dumps(data)
 
+            # Block the intent publication until POI is disambiguated
+            # TODO
+
             # publish message
             msg = Intent(**intent)
-            # msg = String()
-            # msg.data = flat_data
             intent_pub.publish(msg)
 
             rate.sleep()
@@ -85,7 +87,8 @@ class IntentWrapper(object):
                                    "poi_deviation" : abs(obstacle.angle) > POI_ANGLE_THRESHOLD,
                                    "poi_label" : obstacle.label}
                 intent["poi_present"] = True
-                intent["poi_objects"].append(base_poi_object.copy())
+                poi_object = POI_Object(**base_poi_object)
+                intent["poi_objects"].append(poi_object)
             elif abs(obstacle.angle) < OBSTACLE_ANGLE_THRESHOLD and not intent["obstacle_present"]:
                 intent["obstacle_present"] = True
                 intent["obstacle_label"] = obstacle.label

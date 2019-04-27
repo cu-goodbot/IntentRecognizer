@@ -4,7 +4,7 @@ import speech_recognition as sr
 recognizer = sr.Recognizer()
 STEP_SIZE = 2
 
-def speech_to_text():
+def speech_to_text(ask_poi = False):
     with sr.Microphone() as sound_source:
         print("Say something")
         audio = recognizer.listen(sound_source)
@@ -12,6 +12,8 @@ def speech_to_text():
         try:
             return recognizer.recognize_google(audio).lower()
         except:
+            if ask_poi:
+                return "POI not clear"
             return "forward"
 
 def form_intent(step_size = STEP_SIZE, direction = None, explain = False):
@@ -28,7 +30,6 @@ def identify_command():
     print("'" + utterance + "'")
     if 'forward' in utterance:
         return form_intent()
-
     elif 'stop' in utterance:
         return form_intent(step_size=0)
     elif 'left' in utterance:
@@ -40,6 +41,18 @@ def identify_command():
     else:
         return {'explain': 'Sorry, can you repeat?'}
 
+def indentify_poi():
+    utterance = speech_to_text(ask_poi=True)
+    if 'first' in utterance:
+        return 0
+    elif 'second' in utterance:
+        return 1
+    elif 'third' in utterance:
+        return 2
+    else:
+        # If the utterance was not inferred or delivered
+        # correctly the left most POI is selected
+        return 0
 
 def main():
     pprint(identify_command())
