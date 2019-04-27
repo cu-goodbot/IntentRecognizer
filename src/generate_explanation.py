@@ -41,12 +41,17 @@ def generate_sentence(intent):
         if obstacle_present == True:
             explanation_sentence = explanation_sentence + " and I am deviating from the straight path to avoid a " + obstacle_label + " in path."
     if poi_count > 1:
-        explanation_sentence = "I see there are " + str(poi_count) + " goals. starting from left to right, they are "
+        explanation_sentence = "I see there are " + str(poi_count) + " goals. starting from left to right, they are,"
         pois = ""
+        num = 0
         for obj in poi_objects:
             poi_label = obj['poi_label']
-            pois = pois + poi_label
-        explanation_sentence = explanation_sentence + pois + " which one would you like to take me to?"
+            if num != 0:
+                pois = pois + " and " + poi_label
+            else:
+                pois = pois + " " + poi_label
+            num += 1
+        explanation_sentence = explanation_sentence + pois + ", which one would you like me to take you to?"
 
 
 
@@ -98,7 +103,13 @@ def main():
                    'poi_angle': 5.425,
                    'poi_deviation': True,
                    'poi_label': 'person'
-                   }],
+                   },
+                  {'poi_depth': 2.775,
+                   'poi_angle': 5.425,
+                   'poi_deviation': True,
+                   'poi_label': 'door'
+                   }
+              ],
               'poi_present': True,
               'turn_direction': None
               }
