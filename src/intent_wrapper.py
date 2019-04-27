@@ -11,7 +11,7 @@ from std_msgs.msg import String
 from intent_recognizer.msg import Intent, POI_Object
 from scene_understanding.msg import Scene
 
-from speech_to_text import speech_to_text, identify_command, indentify_poi
+from speech_to_text import speech_to_text, identify_command, identify_poi
 from generate_explanation import generate_sentence, speaker
 
 POI_ANGLE_THRESHOLD = 3
@@ -46,12 +46,18 @@ class IntentWrapper(object):
                 # TODO pause Movo mometarily
                 sentence = generate_sentence(intent)
                 speaker(sentence)
-            
-            # create intent message
-            # flat_data = json.dumps(data)
 
             # Block the intent publication until POI is disambiguated
-            # TODO
+            if len(intent["poi_objects"]) > 1:
+                # Inform the user about multiple POIs
+                sentence = generate_sentence(intent)
+                speaker(sentence)
+
+                # Ask the user about their choice of POI
+                poi_index = identify_poi()
+
+                # Modify the existing intent to remove uncertainty
+                intent["poi_objects"] = [POI_Object(**intent["poi_objects"][poi_index])]
 
             # publish message
             msg = Intent(**intent)
@@ -63,7 +69,7 @@ class IntentWrapper(object):
     def get_POI_info(self, msg):
         """
         Scene info callback. Gets POI info from scene_info to infer true intent
-        :return: TODO
+        :return: None
         """
         self.POI_info = msg
 
@@ -82,14 +88,13 @@ class IntentWrapper(object):
 
         # Add POI info to generate the true intent
         for obstacle in self.POI_info.objects:
-            if obstacle.label == 'person':
+            if obstacle.label == 'person' or 'chair':
                 base_poi_object = {"poi_depth" : obstacle.depth,
                                    "poi_angle" : obstacle.angle,
                                    "poi_deviation" : abs(obstacle.angle) > POI_ANGLE_THRESHOLD,
                                    "poi_label" : obstacle.label}
                 intent["poi_present"] = True
-                poi_object = POI_Object(**base_poi_object)
-                intent["poi_objects"].append(poi_object)
+                intent["poi_objects"].append(base_poi_object.copy())
             elif abs(obstacle.angle) < OBSTACLE_ANGLE_THRESHOLD and not intent["obstacle_present"]:
                 intent["obstacle_present"] = True
                 intent["obstacle_label"] = obstacle.label
