@@ -8,7 +8,8 @@ from pprint import pprint
 import rospy
 import json
 from std_msgs.msg import String
-from intent_recognizer.msg import Scene, Intent, POI_Object
+from intent_recognizer.msg import Intent, POI_Object
+from scene_understanding.msg import Scene
 
 from speech_to_text import speech_to_text, identify_command, indentify_poi
 from generate_explanation import generate_sentence, speaker
