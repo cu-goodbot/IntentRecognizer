@@ -47,7 +47,7 @@ def identify_command():
     else:
         return {'explain': 'Sorry, can you repeat?'}
 
-def indentify_poi():
+def identify_poi():
     utterance = speech_to_text(ask_poi=True)
     if 'first' in utterance:
         return 0
