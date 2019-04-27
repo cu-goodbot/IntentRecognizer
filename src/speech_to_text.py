@@ -10,7 +10,7 @@ def speech_to_text(ask_poi = False):
         audio = recognizer.listen(sound_source)
         print("Audio recorded")
         try:
-            return recognizer.recognize_google(audio).lower()
+            return recognizer.recognize_sphinx(audio).lower()
         except:
             if ask_poi:
                 return "POI not clear"
