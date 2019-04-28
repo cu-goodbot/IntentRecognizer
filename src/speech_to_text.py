@@ -45,7 +45,9 @@ def identify_command():
     elif len(set(utterance.split()).intersection({'explain', 'what', 'why'})) > 0:
         return form_intent(explain=True)
     else:
-        return {'explain': 'Sorry, can you repeat?'}
+        # If the speech was not received clearly or didn't have
+        # the above words then just take it as a forward command
+        return form_intent()
 
 def identify_poi():
     utterance = speech_to_text(ask_poi=True)

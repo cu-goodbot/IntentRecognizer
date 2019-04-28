@@ -30,7 +30,7 @@ def generate_sentence(intent):
 
     if poi_count == 1:
         poi_object = intent["poi_objects"][0]
-        poi_deviation = poi_object['poi_deviation'];
+        poi_deviation = poi_object['poi_deviation']
         if poi_deviation > 0:
             poi_angle = poi_object['poi_angle']
             poi_label = poi_object['poi_label']

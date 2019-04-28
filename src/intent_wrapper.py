@@ -59,6 +59,8 @@ class IntentWrapper(object):
                 # Modify the existing intent to remove uncertainty
                 intent["poi_objects"] = [POI_Object(**intent["poi_objects"][poi_index])]
 
+            pprint(intent)
+
             # publish message
             msg = Intent(**intent)
             intent_pub.publish(msg)
