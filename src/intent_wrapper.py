@@ -59,6 +59,8 @@ class IntentWrapper(object):
                 # Modify the existing intent to remove uncertainty
                 intent["poi_objects"] = [POI_Object(**intent["poi_objects"][poi_index])]
 
+            else:
+                intent["poi_objects"] = [POI_Object(**intent["poi_objects"][0])]
             pprint(intent)
 
             # publish message
@@ -90,7 +92,7 @@ class IntentWrapper(object):
 
         # Add POI info to generate the true intent
         for obstacle in self.POI_info.objects:
-            if obstacle.label == 'person' or 'chair':
+            if obstacle.label == 'person':
                 base_poi_object = {"poi_depth" : obstacle.depth,
                                    "poi_angle" : obstacle.angle,
                                    "poi_deviation" : abs(obstacle.angle) > POI_ANGLE_THRESHOLD,
