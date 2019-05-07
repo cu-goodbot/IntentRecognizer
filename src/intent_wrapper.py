@@ -80,7 +80,7 @@ class IntentWrapper(object):
     
     def get_input(self):
         """
-        Wait for user input, beginning w/ button press, and turn speech into intnet.
+        Wait for user input, beginning w/ button press, and turn speech into intent.
         """
         # wait for button press
         raw_input('Press r and then enter and then speak input\n')
@@ -92,7 +92,7 @@ class IntentWrapper(object):
 
         # Add POI info to generate the true intent
         for obstacle in self.POI_info.objects:
-            if obstacle.label == 'person':
+            if obstacle.label == 'person': # Persons are the only POIs for our experiment
                 base_poi_object = {"poi_depth" : obstacle.depth,
                                    "poi_angle" : obstacle.angle,
                                    "poi_deviation" : abs(obstacle.angle) > POI_ANGLE_THRESHOLD,
